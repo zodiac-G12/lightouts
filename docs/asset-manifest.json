@@ -1,0 +1,19 @@
+{
+  "files": {
+    "main.js": "/https//zodiac-G12.github.io/lightouts/static/js/main.b4fcefcd.chunk.js",
+    "main.js.map": "/https//zodiac-G12.github.io/lightouts/static/js/main.b4fcefcd.chunk.js.map",
+    "runtime-main.js": "/https//zodiac-G12.github.io/lightouts/static/js/runtime-main.b6065add.js",
+    "runtime-main.js.map": "/https//zodiac-G12.github.io/lightouts/static/js/runtime-main.b6065add.js.map",
+    "static/js/2.30faf058.chunk.js": "/https//zodiac-G12.github.io/lightouts/static/js/2.30faf058.chunk.js",
+    "static/js/2.30faf058.chunk.js.map": "/https//zodiac-G12.github.io/lightouts/static/js/2.30faf058.chunk.js.map",
+    "index.html": "/https//zodiac-G12.github.io/lightouts/index.html",
+    "precache-manifest.83a26018c02ddf6cb3cc30a6591ea56b.js": "/https//zodiac-G12.github.io/lightouts/precache-manifest.83a26018c02ddf6cb3cc30a6591ea56b.js",
+    "service-worker.js": "/https//zodiac-G12.github.io/lightouts/service-worker.js",
+    "static/js/2.30faf058.chunk.js.LICENSE.txt": "/https//zodiac-G12.github.io/lightouts/static/js/2.30faf058.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.b6065add.js",
+    "static/js/2.30faf058.chunk.js",
+    "static/js/main.b4fcefcd.chunk.js"
+  ]
+}
