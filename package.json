@@ -17,9 +17,10 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "deploy": "rm -rf docs && npm run build && mv build docs && gh-pages -d build"
+    "deploy": "rm -rf docs && npm run build && mv build docs",
+    "git-auto": "git add --all && git commit -m autoPush && git push"
   },
-  "homepage": "https//zodiac-G12.github.io/lightouts",
+  "homepage": "/lightouts/",
   "eslintConfig": {
     "extends": "react-app"
   },
