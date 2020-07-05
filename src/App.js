@@ -1,5 +1,9 @@
-import React, { useRef, useState } from 'react';
-import { Canvas } from 'react-three-fiber';
+import React, { useRef, useState, useEffect } from 'react';
+import { Canvas, extend, useThree } from 'react-three-fiber';
+
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+
+extend({ OrbitControls });
 
 // import './App.css';
 
@@ -137,14 +141,32 @@ MatrixBox.defaultProps = {
     active: statusLights
 }
 
+const CameraController = () => {
+    const { camera, gl } = useThree();
+    useEffect(
+        () => {
+            const controls = new OrbitControls(camera, gl.domElement);
+
+            controls.minDistance = 3;
+            controls.maxDistance = 20;
+            return () => {
+                controls.dispose();
+            };
+        },
+        [camera, gl]
+    );
+    return null;
+};
+
 function App() {
-  return (
-    <Canvas>
-        <ambientLight />
-        <pointLight position={[100, 100, 100]} />
-        <MatrixBox />
-    </Canvas>
-  );
+    return (
+        <Canvas>
+            <CameraController />
+            <ambientLight />
+            <pointLight position={[10, 10, 10]} />
+            <MatrixBox />
+        </Canvas>
+    );
 }
 
 export default App;
