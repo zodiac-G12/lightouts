@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/lightouts/static/css/main.3fbd9571.chunk.css",
-    "main.js": "/lightouts/static/js/main.b9908dac.chunk.js",
-    "main.js.map": "/lightouts/static/js/main.b9908dac.chunk.js.map",
+    "main.js": "/lightouts/static/js/main.753b2f28.chunk.js",
+    "main.js.map": "/lightouts/static/js/main.753b2f28.chunk.js.map",
     "runtime-main.js": "/lightouts/static/js/runtime-main.3d68f571.js",
     "runtime-main.js.map": "/lightouts/static/js/runtime-main.3d68f571.js.map",
     "static/js/2.05bf80b8.chunk.js": "/lightouts/static/js/2.05bf80b8.chunk.js",
     "static/js/2.05bf80b8.chunk.js.map": "/lightouts/static/js/2.05bf80b8.chunk.js.map",
     "index.html": "/lightouts/index.html",
-    "precache-manifest.b72b77050a9ef0675eee49f1cdee19e2.js": "/lightouts/precache-manifest.b72b77050a9ef0675eee49f1cdee19e2.js",
+    "precache-manifest.27ec7eeaad10c40b928e1d569fc1fc4f.js": "/lightouts/precache-manifest.27ec7eeaad10c40b928e1d569fc1fc4f.js",
     "service-worker.js": "/lightouts/service-worker.js",
     "static/css/main.3fbd9571.chunk.css.map": "/lightouts/static/css/main.3fbd9571.chunk.css.map",
     "static/js/2.05bf80b8.chunk.js.LICENSE.txt": "/lightouts/static/js/2.05bf80b8.chunk.js.LICENSE.txt"
@@ -17,6 +17,6 @@
     "static/js/runtime-main.3d68f571.js",
     "static/js/2.05bf80b8.chunk.js",
     "static/css/main.3fbd9571.chunk.css",
-    "static/js/main.b9908dac.chunk.js"
+    "static/js/main.753b2f28.chunk.js"
   ]
 }

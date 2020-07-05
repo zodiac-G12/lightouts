@@ -59,8 +59,10 @@ function MatrixBox(props) {
 
     for(let xyz in idxes) {
         // TODO FIXME N=3 only
-        let y = parseInt(idxes[xyz][0]/boxSize+boxSize/2+1),
+        let y = parseInt(idxes[xyz][0]/(boxSize+boxSize/2)+1),
             x = (N-1)-parseInt(idxes[xyz][1]/(boxSize+boxSize/2)+1);
+
+        console.log(x,y)
 
         lists.push(
             <Box
