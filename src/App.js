@@ -158,10 +158,10 @@ const CameraController = () => {
     return null;
 };
 
+// <CameraController />
 function App() {
     return (
         <Canvas>
-            <CameraController />
             <ambientLight />
             <pointLight position={[10, 10, 10]} />
             <MatrixBox />
