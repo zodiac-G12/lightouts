@@ -51,6 +51,8 @@ for (let i = 0; i < N*N; i++) {
     }
 }
 
+console.log(idt_mtrx.map(xs => {return xs.join(", ")}).join("\n"));
+
 const mapLightsInv = JSON.parse(JSON.stringify(idt_mtrx));
 
 console.log(mapLightsInv.map(xs => {return xs.join(", ")}).join("\n"));
@@ -66,7 +68,13 @@ function isIdt_mtrx(mtrx) {
 // TODO
 // while (!isIdt_mtrx(toIdt)) {
 //     // toIdt | mapLightsInv
-//
+//     let left, right;
+//     for (let i = 0; i < N*N; i++) {
+//         left = JSON.parse(JSON.stringify(toIdt[i]));
+//         right = JSON.parse(JSON.stringify(mapLightsInv[i]));
+//     }
+//     console.log(mapLightsInv.map(xs => {return xs.join(", ")}).join("\n"));
+//     break;
 // }
 
 console.log(idt_mtrx.map(xs => {return xs.join(", ")}).join("\n"));
