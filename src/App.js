@@ -11,7 +11,7 @@ const boxSize = window.innerWidth > window.innerHeight ? 1 : 0.5;
 const statusLights = [];
 for (let i = 0; i < N; i++) {
     statusLights[i] = [];
-    for (let j = 0; j < N; j++) statusLights[i][j] = 0;
+    for (let j = 0; j < N; j++) statusLights[i][j] = Math.floor(Math.random()*2);
 }
 
 function colorDef(active) {
