@@ -14,6 +14,59 @@ for (let i = 0; i < N; i++) {
     for (let j = 0; j < N; j++) statusLights[i][j] = Math.floor(Math.random()*2);
 }
 
+const mapLights = [];
+for (let i = 0; i < N*N; i++) {
+    mapLights[i] = [];
+    for (let j = 0; j < N*N; j++) {
+        if (
+            i === j ||
+            (0 <= i-1 && i-1 === j && j%N!==N-1) ||
+            (i+1 < N*N && i+1 === j && j%N!==0) ||
+            (0 <= i-N && i-N === j) ||
+            (i+N <= N*N && i+N === j)
+        ) {
+            mapLights[i][j] = 1;
+        } else {
+            mapLights[i][j] = 0;
+        }
+    } 
+}
+
+console.log(mapLights.map(xs => {return xs.join(", ")}).join("\n"));
+
+const toIdt = JSON.parse(JSON.stringify(mapLights));
+
+console.log(toIdt.map(xs => {return xs.join(", ")}).join("\n"));
+
+const idt_mtrx = [];
+for (let i = 0; i < N*N; i++) {
+    idt_mtrx[i] = [];
+    for (let j = 0; j < N*N; j++) {
+        if (i===j) { idt_mtrx[i][j] = 1; }
+        else { idt_mtrx[i][j] = 0; }
+    }
+}
+
+const mapLightsInv = JSON.parse(JSON.stringify(idt_mtrx));
+
+console.log(mapLightsInv.map(xs => {return xs.join(", ")}).join("\n"));
+
+function isIdt_mtrx(mtrx) {
+    return !mtrx.some((row,idx1) => {
+        return row.some((j,idx2) => {
+            return (idx1===idx2&&!j) || (idx1!==idx2&&j);
+        });
+    });
+}
+
+// TODO
+// while (!isIdt_mtrx(toIdt)) {
+//     // toIdt | mapLightsInv
+//
+// }
+
+console.log(idt_mtrx.map(xs => {return xs.join(", ")}).join("\n"));
+
 function colorDef(active) {
     if (active) return "darkorange";
     return "darkslateblue";
@@ -61,8 +114,6 @@ function MatrixBox(props) {
         // TODO FIXME N=3 only
         let y = parseInt(idxes[xyz][0]/(boxSize+boxSize/2)+1),
             x = (N-1)-parseInt(idxes[xyz][1]/(boxSize+boxSize/2)+1);
-
-        console.log(x,y)
 
         lists.push(
             <Box
