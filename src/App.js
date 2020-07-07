@@ -1,27 +1,57 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Canvas, extend, useThree } from 'react-three-fiber';
+import './App.css';
 
-// import { isProblemDifficult, fStatusLights, fMapLights, fIdt_mtrx, isIdt_mtrx, F2_Gauss_Jordan } from './lightsout';
-import { hello, fStatusLights } from './modules/lightsout';
+import { Canvas, extend, useThree, useFrame } from 'react-three-fiber';
+
+import { isProblemDifficult, fStatusLights, fMapLights, fIdt_mtrx, F2_Gauss_Jordan, toShowAnsMap } from './modules/lightsout';
 
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 extend({ OrbitControls });
 
-// import './App.css';
+
+////////////////////////////////////////////////////////////////////////////
+//                            パズルの定義
+////////////////////////////////////////////////////////////////////////////
 
 const N = 3;
 
 // TODO FIXME N=3 only
 const boxSize = window.innerWidth > window.innerHeight ? 1 : 0.5;
 
-console.log("pre anble")
-console.log(hello());
-console.log("pre anble")
-console.log(fStatusLights(N))
+// Light Outs ライトの初期値
 const statusLights = fStatusLights(N);
-console.log(statusLights)
 
+// この問題に関して、解が一意的に存在するか判定しやすいかの是非
+console.log(
+    isProblemDifficult(N) ? "Difficult" : "Easy"
+);
+
+// 拡大隣接行列->単位行列にする予定
+const toIdt = fMapLights(N);
+
+// 単位行列->拡大隣接行列の逆行列にする予定
+const mapLightsInv = fIdt_mtrx(N);
+
+// 拡大隣接行列の逆行列　存在しない時はnull
+const toAnsMtrx = F2_Gauss_Jordan(N, toIdt, mapLightsInv);
+
+// 答の場所を示すライトの位置の初期値
+const defaultAnsMap = [];
+for (let i = 0; i < N; i++) {
+    defaultAnsMap[i] = [];
+    for (let j = 0; j < N; j++) defaultAnsMap[i][j] = 0;
+}
+
+// 答の場所を示すライトの位置
+let ansMap = JSON.parse(JSON.stringify(defaultAnsMap));
+
+let showAnsFlag = false;
+
+////////////////////////////////////////////////////////////////////////////
+
+
+// TODO コンポーネント分け
 function colorDef(active) {
     if (active) return "darkorange";
     return "darkslateblue";
@@ -37,11 +67,21 @@ function clickBox(index) {
             statusLights[add[0]+x][add[1]+y] = ~statusLights[add[0]+x][add[1]+y] & 1;
         }
     });
+
+    if (!isProblemDifficult(N) && toAnsMtrx) {
+        ansMap = toShowAnsMap(statusLights.flat(), toAnsMtrx, N);
+    }
+
     console.log(statusLights.map(xs => {return xs.join(", ")}).join("\n"));
 }
 
 function Box(props) {
     const mesh = useRef();
+
+    let y = parseInt(props.position[0]/(boxSize+boxSize/2)+1),
+        x = (N-1)-parseInt(props.position[1]/(boxSize+boxSize/2)+1);
+
+    useFrame(() => {(showAnsFlag && ansMap[x][y]===1) ? mesh.current.rotation.y += 0.1 : mesh.current.rotation.y = 0 });
 
     return (
         <mesh
@@ -74,7 +114,7 @@ function MatrixBox(props) {
             <Box
                 onClick={(e) => {
                     clickBox([y,x]);
-                    setState({...state, active: statusLights});
+                    setState({...state, active: statusLights, answer: ansMap});
                 } }
                 key={xyz}
                 position={idxes[xyz]}
@@ -89,7 +129,8 @@ function MatrixBox(props) {
 }
 
 MatrixBox.defaultProps = {
-    active: statusLights
+    active: statusLights,
+    answer: ansMap
 }
 
 const CameraController = () => {
@@ -109,14 +150,19 @@ const CameraController = () => {
     return null;
 };
 
+// <CameraController />
 function App() {
     return (
-        <Canvas>
-            <CameraController />
-            <ambientLight />
-            <pointLight position={[10, 10, 10]} />
-            <MatrixBox />
-        </Canvas>
+        <div className="app-container">
+            <button
+                onClick={(e) => { showAnsFlag = !showAnsFlag } }
+                className="ans-show-button">SHOW ANSWER</button>
+            <Canvas>
+                <ambientLight />
+                <pointLight position={[10, 10, 10]} />
+                <MatrixBox />
+            </Canvas>
+        </div>
     );
 }
 

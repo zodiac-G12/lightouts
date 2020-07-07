@@ -28,10 +28,6 @@
 //
 *************************************************************************************/
 
-export function hello() {
-    return "Hello";
-}
-
 // Nが15より大きいと配列サイズ・計算量的に困難になる（ブラウザという方法論に於いてのみに限る主張）
 export function isProblemDifficult(n) {
     if (n<=15) return false;
@@ -41,12 +37,11 @@ export function isProblemDifficult(n) {
 
 // ライトの初期値をランダムに決めて出力する
 export function fStatusLights(n) {
-    const statusLights = [];
-    for (let i = 0; i < n; n++) {
+    let statusLights = [];
+    for (let i = 0; i < n; i++) {
         statusLights[i] = [];
         for (let j = 0; j < n; j++) statusLights[i][j] = Math.floor(Math.random()*2);
     }
-    console.log(statusLights)
     return statusLights;
 }
 
@@ -187,30 +182,37 @@ export function F2_Gauss_Jordan(n, toIdt, mapLightsInv) {
     }
 
     // 逆行列が作れなかった
-    if (!isIdt_mtrx(toIdt)) return;
+    if (!isIdt_mtrx(toIdt)) {
+        console.warn("Inverse Matrix isnt EXIST!");
+        return;
+    }
 
     console.log(count);
-    console.log("toIdt", toIdt.map(xs => {return xs.join(", ")}).join("\n"), "\n");
-    console.log("mapLightsInv", mapLightsInv.map(xs => {return xs.join(", ")}).join("\n"), "\n");
+    console.log("toIdt", "\n", toIdt.map(xs => {return xs.join(", ")}).join("\n"), "\n");
+    console.log("mapLightsInv", "\n", mapLightsInv.map(xs => {return xs.join(", ")}).join("\n"), "\n");
     return mapLightsInv;
 }
 
-// console.log(toIdt.map(xs => {return xs.join(", ")}).join("\n"), "\n");
 
-// console.log(mapLights, mapLightsInv)
+const eachSlice = (arr, n = 2) => {
+    let dup = [...arr];
+    let result = [];
+    let length = dup.length;
 
-// const a = [];
-// for (let i = 0; i < N*N; i++) {
-//     a[i] = [];
-//     for (let j = 0; j < N*N; j++) {
-//         a[i][j] = 0;
-//         for(let k = 0; k < N*N; k++) a[i][j] = (a[i][j] + (mapLights[k][j]*mapLightsInv[i][k]))&1;
-//     }
-// }
-//
-// console.log("E", a)
-//
-//
-// f = [0,0,1,1,0,1,1,0,0];
-//
-// console.log(mapLightsInv.map((row => {return row.map((i,idx) => {return (i*f[idx])}).filter(i=>i===1).length&1} )))
+    while (0 < length) {
+        result.push(dup.splice(0, n));
+        length = dup.length;
+    }
+
+    return result;
+};
+
+
+// 答のマップを返す 
+export function toShowAnsMap(state, toAnsMtrx, n) {
+    return eachSlice(toAnsMtrx.map(row => {
+        return row.map((i,idx) => {
+            return (i*state[idx]);
+        }).filter(i=>i===1).length&1;
+    }), n);
+}
