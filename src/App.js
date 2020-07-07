@@ -2,10 +2,14 @@ import React, { useRef, useState, useEffect } from 'react';
 import './App.css';
 
 import { Canvas, extend, useThree, useFrame } from 'react-three-fiber';
+import * as THREE from "three";
+
+// ⚠️  CAUTIONS!!!!
+// in :973 comment outed
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 import { isProblemDifficult, fStatusLights, fMapLights, fIdt_mtrx, F2_Gauss_Jordan, toShowAnsMap } from './modules/lightsout';
 
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 extend({ OrbitControls });
 
@@ -17,7 +21,7 @@ extend({ OrbitControls });
 const N = 3;
 
 // TODO FIXME N=3 only
-const boxSize = window.innerWidth > window.innerHeight ? 1 : 0.5;
+const boxSize = window.innerWidth > window.innerHeight ? 10 : 10;
 
 // Light Outs ライトの初期値
 const statusLights = fStatusLights(N);
@@ -135,12 +139,14 @@ MatrixBox.defaultProps = {
 
 const CameraController = () => {
     const { camera, gl } = useThree();
+    const cameraDistance = window.innerWidth > window.innerHeight ? 50 : 70;
     useEffect(
         () => {
             const controls = new OrbitControls(camera, gl.domElement);
 
-            controls.minDistance = 3;
-            controls.maxDistance = 20;
+            camera.position.set(0, 0, cameraDistance);
+            controls.minDistance = 0;
+            controls.maxDistance = 200;
             return () => {
                 controls.dispose();
             };
@@ -150,7 +156,6 @@ const CameraController = () => {
     return null;
 };
 
-// <CameraController />
 function App() {
     return (
         <div className="app-container">
@@ -158,8 +163,9 @@ function App() {
                 onClick={(e) => { showAnsFlag = !showAnsFlag } }
                 className="ans-show-button">SHOW ANSWER</button>
             <Canvas>
+                <CameraController />
                 <ambientLight />
-                <pointLight position={[10, 10, 10]} />
+                <pointLight position={[0, 0, 100]} />
                 <MatrixBox />
             </Canvas>
         </div>
