@@ -1,6 +1,9 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Canvas, extend, useThree } from 'react-three-fiber';
 
+// import { isProblemDifficult, fStatusLights, fMapLights, fIdt_mtrx, isIdt_mtrx, F2_Gauss_Jordan } from './lightsout';
+import { hello, fStatusLights } from './modules/lightsout';
+
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 extend({ OrbitControls });
@@ -12,72 +15,12 @@ const N = 3;
 // TODO FIXME N=3 only
 const boxSize = window.innerWidth > window.innerHeight ? 1 : 0.5;
 
-const statusLights = [];
-for (let i = 0; i < N; i++) {
-    statusLights[i] = [];
-    for (let j = 0; j < N; j++) statusLights[i][j] = Math.floor(Math.random()*2);
-}
-
-const mapLights = [];
-for (let i = 0; i < N*N; i++) {
-    mapLights[i] = [];
-    for (let j = 0; j < N*N; j++) {
-        if (
-            i === j ||
-            (0 <= i-1 && i-1 === j && j%N!==N-1) ||
-            (i+1 < N*N && i+1 === j && j%N!==0) ||
-            (0 <= i-N && i-N === j) ||
-            (i+N <= N*N && i+N === j)
-        ) {
-            mapLights[i][j] = 1;
-        } else {
-            mapLights[i][j] = 0;
-        }
-    } 
-}
-
-console.log(mapLights.map(xs => {return xs.join(", ")}).join("\n"));
-
-const toIdt = JSON.parse(JSON.stringify(mapLights));
-
-console.log(toIdt.map(xs => {return xs.join(", ")}).join("\n"));
-
-const idt_mtrx = [];
-for (let i = 0; i < N*N; i++) {
-    idt_mtrx[i] = [];
-    for (let j = 0; j < N*N; j++) {
-        if (i===j) { idt_mtrx[i][j] = 1; }
-        else { idt_mtrx[i][j] = 0; }
-    }
-}
-
-console.log(idt_mtrx.map(xs => {return xs.join(", ")}).join("\n"));
-
-const mapLightsInv = JSON.parse(JSON.stringify(idt_mtrx));
-
-console.log(mapLightsInv.map(xs => {return xs.join(", ")}).join("\n"));
-
-function isIdt_mtrx(mtrx) {
-    return !mtrx.some((row,idx1) => {
-        return row.some((j,idx2) => {
-            return (idx1===idx2&&!j) || (idx1!==idx2&&j);
-        });
-    });
-}
-
-// TODO
-// while (!isIdt_mtrx(toIdt)) {
-//     // toIdt | mapLightsInv
-//     let left, right;
-//     for (let i = 0; i < N*N; i++) {
-//         left = JSON.parse(JSON.stringify(toIdt[i]));
-//         right = JSON.parse(JSON.stringify(mapLightsInv[i]));
-//     }
-//     console.log(mapLightsInv.map(xs => {return xs.join(", ")}).join("\n"));
-//     break;
-// }
-
-console.log(idt_mtrx.map(xs => {return xs.join(", ")}).join("\n"));
+console.log("pre anble")
+console.log(hello());
+console.log("pre anble")
+console.log(fStatusLights(N))
+const statusLights = fStatusLights(N);
+console.log(statusLights)
 
 function colorDef(active) {
     if (active) return "darkorange";
@@ -166,10 +109,10 @@ const CameraController = () => {
     return null;
 };
 
-// <CameraController />
 function App() {
     return (
         <Canvas>
+            <CameraController />
             <ambientLight />
             <pointLight position={[10, 10, 10]} />
             <MatrixBox />
