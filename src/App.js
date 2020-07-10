@@ -6,6 +6,7 @@ import * as THREE from "three";
 
 // ⚠️  CAUTIONS!!!!
 // in :973 comment outed
+// vim ../node_modules/three/examples/jsm/controls/OrbitControls.js
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 import { isProblemDifficult, fStatusLights, fMapLights, fIdt_mtrx, F2_Gauss_Jordan, toShowAnsMap } from './modules/lightsout';
@@ -18,10 +19,11 @@ extend({ OrbitControls });
 //                            パズルの定義
 ////////////////////////////////////////////////////////////////////////////
 
+
 const N = 3;
 
 // TODO FIXME N=3 only
-const boxSize = window.innerWidth > window.innerHeight ? 10 : 10;
+const boxSize = 100;
 
 // Light Outs ライトの初期値
 const statusLights = fStatusLights(N);
@@ -139,14 +141,14 @@ MatrixBox.defaultProps = {
 
 const CameraController = () => {
     const { camera, gl } = useThree();
-    const cameraDistance = window.innerWidth > window.innerHeight ? 50 : 70;
+    const cameraDistance = window.innerWidth > window.innerHeight ? 500 : 700;
     useEffect(
         () => {
             const controls = new OrbitControls(camera, gl.domElement);
 
             camera.position.set(0, 0, cameraDistance);
             controls.minDistance = 0;
-            controls.maxDistance = 200;
+            controls.maxDistance = 1000;
             return () => {
                 controls.dispose();
             };
@@ -165,7 +167,7 @@ function App() {
             <Canvas>
                 <CameraController />
                 <ambientLight />
-                <pointLight position={[0, 0, 100]} />
+                <pointLight position={[0, 0, 1000]} />
                 <MatrixBox />
             </Canvas>
         </div>
