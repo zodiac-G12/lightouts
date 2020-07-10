@@ -1,18 +1,12 @@
-import React, { useRef, useState, useEffect } from 'react';
-import './App.css';
+import React, { useRef, useState } from 'react';
 
-import { Canvas, extend, useThree, useFrame } from 'react-three-fiber';
+import { Canvas, useFrame } from 'react-three-fiber';
 
-// ⚠️  CAUTIONS!!!!
-// in :973 comment outed
-// vim ../node_modules/three/examples/jsm/controls/OrbitControls.js
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { isProblemDifficult, fStatusLights, fMapLights, fIdt_mtrx, F2_Gauss_Jordan, toShowAnsMap } from '../modules/lightsout';
 
-import { isProblemDifficult, fStatusLights, fMapLights, fIdt_mtrx, F2_Gauss_Jordan, toShowAnsMap } from './modules/lightsout';
+import styled from 'styled-components';
 
-
-extend({ OrbitControls });
-
+import CameraController from '../components/CameraController';
 
 ////////////////////////////////////////////////////////////////////////////
 //                            パズルの定義
@@ -92,7 +86,6 @@ function Box(props) {
     );
 }
 
-
 function MatrixBox(props) {
     const mesh = useRef();
 
@@ -139,45 +132,15 @@ MatrixBox.defaultProps = {
     answer: ansMap
 }
 
-const CameraController = () => {
-    const { camera, gl } = useThree();
-    const cameraDistance = 700;;
-    useEffect(
-        () => {
-            const controls = new OrbitControls(camera, gl.domElement);
-
-            camera.position.set(0, 0, cameraDistance);
-            controls.minDistance = 0;
-            controls.maxDistance = 1000;
-            return () => {
-                controls.dispose();
-            };
-        },
-        [camera, gl]
-    );
-    return null;
-};
-
-function App(props) {
-    const [state, setState] = useState(props);
-
+function CanvasC(props) {
     return (
-        <div className="app-container">
-            <button
-                onClick={(e) => { setState({...state, showAnsFlag: !state.showAnsFlag }) } }
-                className="ans-show-button">SHOW ANSWER</button>
-            <Canvas>
-                <CameraController />
-                <ambientLight />
-                <pointLight position={[0, 0, 1000]} />
-                <MatrixBox showAnsFlag={state.showAnsFlag} />
-            </Canvas>
-        </div>
+        <Canvas>
+            <CameraController />
+            <ambientLight />
+            <pointLight position={[0, 0, 1000]} />
+            <MatrixBox showAnsFlag={props.showAnsFlag} />
+        </Canvas>
     );
 }
 
-App.defaultProps = {
-    showAnsFlag: false
-}
-
-export default App;
+export default CanvasC;
