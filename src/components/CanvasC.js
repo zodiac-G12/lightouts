@@ -4,8 +4,6 @@ import { Canvas, useFrame } from 'react-three-fiber';
 
 import { isProblemDifficult, fStatusLights, fMapLights, fIdt_mtrx, F2_Gauss_Jordan, toShowAnsMap } from '../modules/lightsout';
 
-import styled from 'styled-components';
-
 import CameraController from '../components/CameraController';
 
 ////////////////////////////////////////////////////////////////////////////
