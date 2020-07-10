@@ -66,7 +66,7 @@ export const fMapLights = (n : number) : number[][] => {
 export const fIdt_mtrx = (n : number) : number[][] => {
     return [...Array(n*n).keys()].map(i => {
         return [...Array(n*n).keys()].map(j => {
-            if (i==j) return 1;
+            if (i===j) return 1;
             return 0;
         });
     });

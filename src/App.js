@@ -2,7 +2,6 @@ import React, { useRef, useState, useEffect } from 'react';
 import './App.css';
 
 import { Canvas, extend, useThree, useFrame } from 'react-three-fiber';
-import * as THREE from "three";
 
 // ⚠️  CAUTIONS!!!!
 // in :973 comment outed
@@ -21,7 +20,7 @@ extend({ OrbitControls });
 
 const N = !window.location.href.split("#")[1] || parseInt(window.location.href.split("#")[1]) < 2 ? 3 : parseInt(window.location.href.split("#")[1]);
 
-const baseWid = window.innerWidth > window.innerHeight ? window.innerHeight : window.innerWidth;
+const baseWid = window.innerWidth > window.innerHeight ? window.innerHeight : window.innerWidth*1.25;
 const boxSize = baseWid / (N*2);
 
 // Light Outs ライトの初期値
@@ -81,8 +80,6 @@ function clickBox(index) {
 function Box(props) {
     const mesh = useRef();
 
-    const [state, setState] = useState(props);
-
     useFrame(() => {(props.showAnsFlag && props.ansMap[props.x][props.y]===1) ? mesh.current.rotation.y += 0.1 : mesh.current.rotation.y = 0 });
 
     return (
@@ -117,7 +114,7 @@ function MatrixBox(props) {
 
         lists.push(
             <Box
-                onClick={(e) => {
+                onClick={() => {
                     clickBox([y,x]);
                     setState({...state, active: statusLights, answer: ansMap});
                 } }
