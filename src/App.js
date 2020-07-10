@@ -19,11 +19,10 @@ extend({ OrbitControls });
 //                            パズルの定義
 ////////////////////////////////////////////////////////////////////////////
 
+const N = !window.location.href.split("#")[1] || parseInt(window.location.href.split("#")[1]) < 2 ? 3 : parseInt(window.location.href.split("#")[1]);
 
-const N = 3;
-
-// TODO FIXME N=3 only
-const boxSize = 100;
+const baseWid = window.innerWidth > window.innerHeight ? window.innerHeight : window.innerWidth;
+const boxSize = baseWid / (N*2);
 
 // Light Outs ライトの初期値
 const statusLights = fStatusLights(N);
@@ -50,9 +49,7 @@ for (let i = 0; i < N; i++) {
 }
 
 // 答の場所を示すライトの位置
-let ansMap = JSON.parse(JSON.stringify(defaultAnsMap));
-
-let showAnsFlag = false;
+let ansMap = (!isProblemDifficult(N) && toAnsMtrx) ? toShowAnsMap(statusLights.flat(), toAnsMtrx, N) : JSON.parse(JSON.stringify(defaultAnsMap));
 
 ////////////////////////////////////////////////////////////////////////////
 
@@ -75,7 +72,7 @@ function clickBox(index) {
     });
 
     if (!isProblemDifficult(N) && toAnsMtrx) {
-        ansMap = toShowAnsMap(statusLights.flat(), toAnsMtrx, N);
+        ansMap = JSON.parse(JSON.stringify(toShowAnsMap(statusLights.flat(), toAnsMtrx, N)));
     }
 
     console.log(statusLights.map(xs => {return xs.join(", ")}).join("\n"));
@@ -84,10 +81,9 @@ function clickBox(index) {
 function Box(props) {
     const mesh = useRef();
 
-    let y = parseInt(props.position[0]/(boxSize+boxSize/2)+1),
-        x = (N-1)-parseInt(props.position[1]/(boxSize+boxSize/2)+1);
+    const [state, setState] = useState(props);
 
-    useFrame(() => {(showAnsFlag && ansMap[x][y]===1) ? mesh.current.rotation.y += 0.1 : mesh.current.rotation.y = 0 });
+    useFrame(() => {(props.showAnsFlag && props.ansMap[props.x][props.y]===1) ? mesh.current.rotation.y += 0.1 : mesh.current.rotation.y = 0 });
 
     return (
         <mesh
@@ -99,22 +95,25 @@ function Box(props) {
     );
 }
 
+
 function MatrixBox(props) {
     const mesh = useRef();
 
     const [state, setState] = useState(props);
 
-    // TODO FIXME N=3 only
-    const preIdx = [-1*(boxSize+boxSize/2), 0, boxSize+boxSize/2];
+    const basezDistance = boxSize + boxSize / 2;
+
+    const preIdx = [...Array(N).keys()].map((_, i) => {
+        return (i - Math.floor(N / 2)) * basezDistance + (N&1 ? 0 : basezDistance/2);
+    });
 
     const idxes = preIdx.map(i => {return preIdx.map(j => {return [i, j, 0] }) }).flat();
 
     const lists = [];
 
     for(let xyz in idxes) {
-        // TODO FIXME N=3 only
-        let y = parseInt(idxes[xyz][0]/(boxSize+boxSize/2)+1),
-            x = (N-1)-parseInt(idxes[xyz][1]/(boxSize+boxSize/2)+1);
+        let y = parseInt(idxes[xyz][0] / basezDistance + Math.floor(N/2)),
+            x = (N-1)-parseInt(idxes[xyz][1] / basezDistance + Math.floor(N/2));
 
         lists.push(
             <Box
@@ -123,6 +122,10 @@ function MatrixBox(props) {
                     setState({...state, active: statusLights, answer: ansMap});
                 } }
                 key={xyz}
+                y={y}
+                x={x}
+                showAnsFlag={props.showAnsFlag}
+                ansMap={state.answer}
                 position={idxes[xyz]}
                 color={colorDef(state.active[x][y])}
             />
@@ -141,7 +144,7 @@ MatrixBox.defaultProps = {
 
 const CameraController = () => {
     const { camera, gl } = useThree();
-    const cameraDistance = window.innerWidth > window.innerHeight ? 500 : 700;
+    const cameraDistance = 700;;
     useEffect(
         () => {
             const controls = new OrbitControls(camera, gl.domElement);
@@ -158,20 +161,26 @@ const CameraController = () => {
     return null;
 };
 
-function App() {
+function App(props) {
+    const [state, setState] = useState(props);
+
     return (
         <div className="app-container">
             <button
-                onClick={(e) => { showAnsFlag = !showAnsFlag } }
+                onClick={(e) => { setState({...state, showAnsFlag: !state.showAnsFlag }) } }
                 className="ans-show-button">SHOW ANSWER</button>
             <Canvas>
                 <CameraController />
                 <ambientLight />
                 <pointLight position={[0, 0, 1000]} />
-                <MatrixBox />
+                <MatrixBox showAnsFlag={state.showAnsFlag} />
             </Canvas>
         </div>
     );
+}
+
+App.defaultProps = {
+    showAnsFlag: false
 }
 
 export default App;

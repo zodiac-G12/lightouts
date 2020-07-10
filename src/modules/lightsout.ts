@@ -89,14 +89,12 @@ export const arrayDeepCp = (array: number[]) : number[] => {
 }
 
 
-// F2-adder
-// export const F2_add = (a : number[], b : number[]) => {
-//     
-// }
-
+// TODO refact
 // F2体上ににおいて、ある行列の逆行列を出力する
 export const F2_Gauss_Jordan = (n : number, toIdt : number[][], mapLightsInv : number[][]) : boolean|number[][] => {
+    // 完成した行（単位行列の一部）
     const kansei : boolean[] = Array(n*n).fill(false);
+    // 完成した行で、各行に対して処理していないもの
     const pend : boolean[] = Array(n*n).fill(false);
 
     let count = 0;
@@ -106,7 +104,7 @@ export const F2_Gauss_Jordan = (n : number, toIdt : number[][], mapLightsInv : n
         toIdt.forEach((row, i) => {
             // 各行に対して
             row.forEach((isOne, idx) => {
-                if (i === idx || !isOne) return;
+                if (i === idx || isOne !== 1) return;
                 // (i,i) 以外で"1"になっている箇所について処理 (i,idx)
                 for (let j = 0; j < n*n; j++) {
                     // (j,0) ~ (j,idx-1) が全て"0"で (j,idx) が"1"
@@ -127,6 +125,7 @@ export const F2_Gauss_Jordan = (n : number, toIdt : number[][], mapLightsInv : n
                             chLeft = row,
                             chRight = mapLightsInv[i];
 
+                        // 行の入れ替え処理
                         toIdt[i] = arrayDeepCp(toIdt[chIdx]);
                         mapLightsInv[i] = arrayDeepCp(mapLightsInv[chIdx]);
 
