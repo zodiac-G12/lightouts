@@ -36,52 +36,40 @@ export const isProblemDifficult = (n : number) : boolean => {
 
 // ライトの初期値をランダムに決めて出力する
 export const fStatusLights = (n : number) : number[][] => {
-    const statusLights = [];
-    for (let i = 0; i < n; i++) {
-        statusLights[i] = [];
-        for (let j = 0; j < n; j++) {
-            (statusLights[i][j] as number) = Math.floor(Math.random()*2);
-        }
-    }
-    return statusLights;
+    return [...Array(n).keys()].map(i => {
+        return [...Array(n).keys()].map(j => {
+            return Math.floor(Math.random()*2);
+        });
+    });
 }
 
 
 // 拡大隣接行列：つまりは各マスから各マスに、写像が対応するかに関する真偽値(binary)の、有効グラフの行列
 // を出力する
 export const fMapLights = (n : number) : number[][] => {
-    const mapLights = [];
-    for (let i = 0; i < n*n; i++) {
-        mapLights[i] = [];
-        for (let j = 0; j < n*n; j++) {
+    return [...Array(n*n).keys()].map(i => {
+        return [...Array(n*n).keys()].map(j => {
             if (
                 i === j || //あるマスにおける自分に対する写像
                 (0 <= i-1 && i-1 === j && j%n!==n-1) || //左側のマスに対する写像
                 (i+1 < n*n && i+1 === j && j%n!==0) || //右側のマスに対する写像
                 (0 <= i-n && i-n === j) || //下側のマスに対する写像
                 (i+n < n*n && i+n === j) //上側に対する写像
-            ) {
-                (mapLights[i][j] as number) = 1;
-            } else { //写像が存在しない時
-                (mapLights[i][j] as number) = 0;
-            }
-        }
-    }
-    return mapLights;
+            ) return 1;
+            return 0;
+        });
+    });
 }
 
 
 // (N*N) * (N*N) の単位行列を出力する
 export const fIdt_mtrx = (n : number) : number[][] => {
-    const idt_mtrx = [];
-    for (let i = 0; i < n*n; i++) {
-        idt_mtrx[i] = [];
-        for (let j = 0; j < n*n; j++) {
-            if (i===j) { (idt_mtrx[i][j] as number) = 1; }
-            else { (idt_mtrx[i][j] as number) = 0; }
-        }
-    }
-    return idt_mtrx;
+    return [...Array(n*n).keys()].map(i => {
+        return [...Array(n*n).keys()].map(j => {
+            if (i==j) return 1;
+            return 0;
+        });
+    });
 }
 
 
@@ -108,20 +96,15 @@ export const arrayDeepCp = (array: number[]) : number[] => {
 
 // F2体上ににおいて、ある行列の逆行列を出力する
 export const F2_Gauss_Jordan = (n : number, toIdt : number[][], mapLightsInv : number[][]) : boolean|number[][] => {
-
-    const kansei : boolean[] = [];
-    const pend : boolean[] = [];
-
-    for(let i = 0; i < n*n; i++) {
-        kansei[i] = false;
-        pend[i] = false;
-    }
+    const kansei : boolean[] = Array(n*n).fill(false);
+    const pend : boolean[] = Array(n*n).fill(false);
 
     let count = 0;
     // 逆行列が作成できるまで、N回までループ
     while (!isIdt_mtrx(toIdt) && count++ < n) {
+
         toIdt.forEach((row, i) => {
-            // row.map((isOne,idx) => {return {isOne: isOne, idx: idx}}).filter(item => (i!==item.idx && item.isOne)).forEach((item) => {
+            // 各行に対して
             row.forEach((isOne, idx) => {
                 if (i === idx || !isOne) return;
                 // (i,i) 以外で"1"になっている箇所について処理 (i,idx)
@@ -136,10 +119,12 @@ export const F2_Gauss_Jordan = (n : number, toIdt : number[][], mapLightsInv : n
                         row[k] = (row[k] + left[k])&1;
                         mapLightsInv[i][k] = (mapLightsInv[i][k] + right[k])&1;
                     }
+
+                    // 単位行列を構成する要素の行が作られた時の処理
                     if (!kansei[i] && row.filter(k=>k===1).length===1) { // cant use "continue"
                         kansei[i] = true;
-                        let chIdx = row.indexOf(1);
-                        let chLeft = row,
+                        let chIdx = row.indexOf(1),
+                            chLeft = row,
                             chRight = mapLightsInv[i];
 
                         toIdt[i] = arrayDeepCp(toIdt[chIdx]);
@@ -202,17 +187,10 @@ export const F2_Gauss_Jordan = (n : number, toIdt : number[][], mapLightsInv : n
 
 
 export const eachSlice = (arr : number[], n : number = 2) : number[][] => {
-    let dup = [...arr];
-    let result = [];
-    let length = dup.length;
-
-    while (0 < length) {
-        result.push(dup.splice(0, n));
-        length = dup.length;
-    }
-
-    return result;
-};
+    return [...Array(Math.floor(arr.length / n)).keys()].map(i => {
+        return arr.slice(i*n, i*n + n);
+    });
+}
 
 
 // 答のマップを返す 
