@@ -4,6 +4,8 @@ import CanvasC from './CanvasC';
 
 import styled from 'styled-components';
 
+import { css } from 'emotion';
+
 function App(props) {
     const [state, setState] = useState(props);
 
@@ -11,7 +13,8 @@ function App(props) {
         <AppContainer>
             <AnsShowButton
                 onClick={() => { setState({...state, showAnsFlag: !state.showAnsFlag }) } }
-                className="ans-show-button">SHOW ANSWER
+                className={state.showAnsFlag ? hide : show}
+                >{state.showAnsFlag ? "HIDE" : "SHOW"} ANSWER
             </AnsShowButton>
             <CanvasC showAnsFlag={state.showAnsFlag} />
         </AppContainer>
@@ -40,6 +43,20 @@ const AnsShowButton = styled.button`
     text-align: center;
     font-size: 3vh;
     padding: 1vh;
+    outline: none;
+    border: solid 1px lime;
+    // box-shadow: 0px 0px 10px 10px darkslategray;
+    // border-radius: 5vh;
+`;
+
+const hide = css`
+    color: white;
+    background: black;
+    box-shadow: 0px 0px 10px 10px darkslategray;
+`;
+
+const show = css`
+    color: black;
     background: white;
 `;
 
