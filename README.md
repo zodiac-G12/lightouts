@@ -32,15 +32,15 @@ This game is depend on these theories:
 
 ## Solver
 
-Solver is `./src/modules/lightsout.ts`
+Solver is [`./src/modules/lightsout.ts`](https://github.com/zodiac-G12/lightouts/blob/master/src/modules/lightsout.ts)
 
 Mechanizm: 
 
-1. Create adjacency matrix E for each cell (Unweighted undirected graph) on F2 calculation
+1. Create adjacency matrix <img src="https://latex.codecogs.com/gif.latex?\inline&space;E" /> for each cell (Unweighted undirected graph) on F2 calculation
 
-2. Create inverse matrix E^{-1} of adjacency matrix
+2. Create inverse matrix <img src="https://latex.codecogs.com/gif.latex?\inline&space;E^{-1}" /> of adjacency matrix
 
-3. E^{-1} * v (Current cells status) = answer vector (State of the cells to be pushed)
+3. <img src="https://latex.codecogs.com/gif.latex?\inline&space;E^{-1}" /> * <img src="https://latex.codecogs.com/gif.latex?\inline&space;v" /> (Current cells status) = answer vector (State of the cells to be pushed)
 
 ## Outlook
 
