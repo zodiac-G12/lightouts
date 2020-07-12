@@ -69,7 +69,7 @@ const Link = styled.a`
     margin: auto;
     width: 50vh;
     text-align: center;
-    top: 90vh;
+    top: 80vh;
     font-size: 3vh;
     color: orange;
     text-shadow: 0px 0px 0.5vh darkorange, -0px -0px 0.7vh red;
