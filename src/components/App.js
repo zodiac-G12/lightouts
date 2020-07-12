@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 import CanvasC from './CanvasC';
 
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 
 import { css } from 'emotion';
 
@@ -17,6 +17,9 @@ function App(props) {
                 >{state.showAnsFlag ? "HIDE" : "SHOW"} ANSWER
             </AnsShowButton>
             <CanvasC showAnsFlag={state.showAnsFlag} />
+            <Link href="https://github.com/zodiac-G12/lightouts#lights-out">
+                Documents :)
+            </Link>
         </AppContainer>
     );
 }
@@ -47,6 +50,32 @@ const AnsShowButton = styled.button`
     border: solid 1px lime;
     // box-shadow: 0px 0px 10px 10px darkslategray;
     // border-radius: 5vh;
+`;
+
+const glimpse = keyframes`
+    from {
+        text-shadow: 0px 0px 0.5vh darkorange, -0px -0px 0.7vh red;
+    }
+    to {
+        text-shadow: 0px 0px 0.9vh darkorange, -0px -0px 1vh red;
+    }
+`;
+
+const Link = styled.a`
+    z-index: 1;
+    position: fixed;
+    left: 0;
+    right: 0;
+    margin: auto;
+    width: 50vh;
+    text-align: center;
+    top: 90vh;
+    font-size: 3vh;
+    color: orange;
+    text-shadow: 0px 0px 0.5vh darkorange, -0px -0px 0.7vh red;
+    // animation: ${glimpse} inifinite 2s ease-in-out;
+    background: rgba(0,0,0,0);
+    text-decoration: none;
 `;
 
 const hide = css`
