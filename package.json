@@ -10,7 +10,7 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.1",
-    "react-three-fiber": "^4.2.12",
+    "react-three-fiber": "^4.2.16",
     "styled-components": "^5.1.1",
     "three": "^0.118.3"
   },
@@ -40,6 +40,7 @@
   },
   "devDependencies": {
     "@types/jest": "^26.0.4",
+    "ts-jest": "^26.1.2",
     "typescript": "3.9.6"
   }
 }

@@ -30,7 +30,7 @@
 
 // Nが15より大きいと配列サイズ・計算量的に困難になる（ブラウザという方法論に於いてのみに限る主張）
 export const isProblemDifficult = (n : number) : boolean => {
-    return n > 20;
+    return n > 15;
 }
 
 
@@ -92,67 +92,94 @@ export const arrayDeepCp = (array: number[]) : number[] => {
 // TODO refact
 // F2体上ににおいて、ある行列の逆行列を出力する
 export const F2_Gauss_Jordan = (n : number, toIdt : number[][], mapLightsInv : number[][]) : boolean|number[][] => {
+    // 完成した行（単位行列の一部）
+    const kansei : boolean[] = Array(n*n).fill(false);
+    // 完成した行で、各行に対して処理していないもの
+    const pend : boolean[] = Array(n*n).fill(false);
 
+    let count = 0;
     // 逆行列が作成できるまで、N回までループ
-    while (!isIdt_mtrx(toIdt)) {
-        // 各行に関して処理
+    while (!isIdt_mtrx(toIdt) && count++ < n) {
+
+        // 各行を見ていく
         toIdt.forEach((row, i) => {
-            // 既に完成している行はスキップ
-            if (row.filter(v => v===1 ).length === 1 && row[i]===1) return;
+            // 各行の中身に対して
+            row.forEach((isOne, idx) => {
+                if (i === idx || isOne !== 1) return;
+                // (i,i) 以外で"1"になっている箇所について処理 (i,idx)
+                for (let j = 0; j < n*n; j++) {
+                    // (j,0) ~ (j,idx-1) が全て"0"で (j,idx) が"1"
+                    if (i===j || toIdt[j].slice(0,idx).includes(1) || toIdt[j][idx]!==1) continue;
 
-            row.forEach((v, j) => {
-                // rowの中で(i,i)以外で1になっているところのみ処理
-                // 単位行列にしたいので、対角以外の1は許容できない
-                // => それ以外はスキップ
-                if (j===i || v!==1) return;
+                    let left = toIdt[j],
+                        right = mapLightsInv[j];
 
-                // (0,0,..<= all zero,
-                // ,1 <= index=j
-                // ,..0 <= index=i not one
-                // ,..) := jFrontAllZeroRow
-                let jFrontAllZeroRow : number[] = [];
-                let idx : number;
-                toIdt.some((row_, i_) => {
-                    if (i_!==i && !row_.slice(0, j).includes(1) && row_[i]!==1) {
-                        jFrontAllZeroRow = arrayDeepCp(row_);
-                        idx = i_;
-                        return true;
+                    for (let k = 0; k < n*n; k++) {
+                        row[k] = (row[k] + left[k])&1;
+                        mapLightsInv[i][k] = (mapLightsInv[i][k] + right[k])&1;
                     }
-                    return false;
-                });
-                jFrontAllZeroRow.forEach((v_, j_) => {
-                    toIdt[i][j_] = (toIdt[i][j_] + v_)&1;
-                    mapLightsInv[i][j_] = (mapLightsInv[i][j_] + mapLightsInv[idx][j_])&1;
-                });
-            });
-        });
-        // ソート：一部ソートしないと解けない問題がある
-        // e.g. N=10, etc
 
-        // ソート前
-        let bef = toIdt.map(row => { return row.join(''); } );
+                    // 単位行列を構成する要素の行が作られた時の処理
+                    if (!kansei[i] && row.filter(k=>k===1).length===1) { // cant use "continue"
+                        kansei[i] = true;
+                        let chIdx = row.indexOf(1),
+                            chLeft = row,
+                            chRight = mapLightsInv[i];
 
-        // 重複行があれば逆行列は存在しない
-        let isDuplicated = bef.filter(function (x, i, self) { return self.indexOf(x) === i && i !== self.lastIndexOf(x); });
-        if (isDuplicated.length > 0) break;
-        toIdt.sort().reverse(); // ⚠️  破壊的変更
+                        // 行の入れ替え処理
+                        toIdt[i] = arrayDeepCp(toIdt[chIdx]);
+                        mapLightsInv[i] = arrayDeepCp(mapLightsInv[chIdx]);
 
-        // ソート後
-        let aft = toIdt.map(row => { return row.join(''); } );
-        // rowのindex->index推移図
-        let btoa = bef.map(row => { return aft.indexOf(row); });
-        let tmp = [...Array(n)];
-        btoa.forEach((j,i) => { tmp[j] = arrayDeepCp(mapLightsInv[i]); });
-        // toIdtに合わせてmapLightsInvのソート
-        tmp.forEach((row,i) => { mapLightsInv[i] = arrayDeepCp(row); });
+                        toIdt[chIdx] = arrayDeepCp(chLeft);
+                        mapLightsInv[chIdx] = arrayDeepCp(chRight);
+
+                        for (let k = 0; k < n*n; k++) {
+                            if (k!==chIdx && toIdt[k][chIdx]===1) {
+                                for (let l = 0; l < n*n; l++) {
+                                    toIdt[k][l] = (toIdt[k][l] + toIdt[chIdx][l])&1;
+                                    mapLightsInv[k][l] = (mapLightsInv[k][l] + mapLightsInv[chIdx][l])&1;
+                                }
+                            }
+                            if (!kansei[k] && toIdt[k].filter(l=>l===1).length===1) {
+                                pend[k] = true;
+                            }
+                        }
+                        pend.forEach((v,m) => {
+                            if (!v || kansei[m] || toIdt[m].filter(k=>k===1).length!==1) return;
+                            pend[m] = false;
+                            kansei[m] = true;
+                            let chIdx = toIdt[m].indexOf(1);
+                            let chLeft = toIdt[m],
+                                chRight = mapLightsInv[m];
+
+                            toIdt[m] = arrayDeepCp(toIdt[chIdx]);
+                            mapLightsInv[m] = arrayDeepCp(mapLightsInv[chIdx]);
+
+                            toIdt[chIdx] = arrayDeepCp(chLeft);
+                            mapLightsInv[chIdx] = arrayDeepCp(chRight);
+
+                            for (let k = 0; k < n*n; k++) {
+                                if (k===chIdx || toIdt[k][chIdx]!==1) continue;
+                                for (let l = 0; l < n*n; l++) {
+                                    toIdt[k][l] = (toIdt[k][l] + toIdt[chIdx][l])&1;
+                                    mapLightsInv[k][l] = (mapLightsInv[k][l] + mapLightsInv[chIdx][l])&1;
+                                }
+                            }
+                        })
+                    }
+                    break;
+                }
+            })
+        })
     }
 
-    // 逆行列が作れなかった
+        // 逆行列が作れなかった
     if (!isIdt_mtrx(toIdt)) {
         console.warn("Inverse Matrix isnt EXIST!");
         return false;
     }
 
+    console.log(count);
     console.log("toIdt", "\n", toIdt.map(xs => {return xs.join(", ")}).join("\n"), "\n");
     console.log("mapLightsInv", "\n", mapLightsInv.map(xs => {return xs.join(", ")}).join("\n"), "\n");
     return mapLightsInv;

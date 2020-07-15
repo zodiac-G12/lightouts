@@ -61,10 +61,11 @@ function clickBox(index) {
     });
 
     if (!isProblemDifficult(N) && toAnsMtrx) {
-        ansMap = JSON.parse(JSON.stringify(toShowAnsMap(statusLights.flat(), toAnsMtrx, N)));
+        ansMap = toShowAnsMap(statusLights.flat(), toAnsMtrx, N);
     }
-
+    
     console.log(statusLights.map(xs => {return xs.join(", ")}).join("\n"));
+    console.log(ansMap.map(xs => {return xs.join(", ")}).join("\n"));
 }
 
 function ThreeMatrixBox(props) {
@@ -83,8 +84,8 @@ function ThreeMatrixBox(props) {
     const lists = [];
 
     for(let xyz in idxes) {
-        let y = parseInt(idxes[xyz][0] / basezDistance + Math.floor(N/2)),
-            x = (N-1)-parseInt(idxes[xyz][1] / basezDistance + Math.floor(N/2));
+        let y = parseInt(parseInt(idxes[xyz][0] / basezDistance) + Math.floor(N/2)),
+            x = (N-1)-parseInt(parseInt(idxes[xyz][1] / basezDistance) + Math.floor(N/2));
 
         lists.push(
             <ThreeBox

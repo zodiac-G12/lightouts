@@ -28,6 +28,7 @@ App.defaultProps = {
     showAnsFlag: false
 }
 
+
 const AppContainer = styled.div`
     margin: 0;
     padding: 0;
@@ -61,6 +62,8 @@ const glimpse = keyframes`
     }
 `;
 
+const linkPositionTop = window.innerHeight > window.innerWidth ? '80vh' : '90vh';
+
 const Link = styled.a`
     z-index: 1;
     position: fixed;
@@ -69,7 +72,7 @@ const Link = styled.a`
     margin: auto;
     width: 50vh;
     text-align: center;
-    top: 80vh;
+    top: ${linkPositionTop};
     font-size: 3vh;
     color: orange;
     text-shadow: 0px 0px 0.5vh darkorange, -0px -0px 0.7vh red;
