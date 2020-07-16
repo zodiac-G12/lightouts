@@ -4,7 +4,7 @@ import { extend, useThree } from 'react-three-fiber';
 
 // ⚠️  CAUTIONS!!!!
 // in :973 comment outed
-// vim ../node_modules/three/examples/jsm/controls/OrbitControls.js
+// vim /node_modules/three/examples/jsm/controls/OrbitControls.js
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 extend({ OrbitControls });
