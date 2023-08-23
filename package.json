@@ -1,46 +1,58 @@
 {
   "name": "lightouts",
-  "version": "0.1.0",
+  "versio": "0.1.0",
   "private": true,
-  "dependencies": {
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.5.0",
-    "@testing-library/user-event": "^7.2.1",
-    "emotion": "^10.0.27",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
-    "react-scripts": "3.4.1",
-    "react-three-fiber": "^4.2.16",
-    "styled-components": "^5.1.1",
-    "three": "^0.118.3"
+  "homepage": "/lightouts/",
+  "license": "MIT",
+  "engines": {
+    "pnpm": "8.6.x",
+    "node": "20.x"
   },
   "scripts": {
-    "start": "react-scripts start --experimental-modules",
-    "build": "npm prune && react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "pre-deploy": "rm -rf docs && npm run build && mv build docs",
-    "git-auto": "git add --all && git commit -m autoPush && git push"
-  },
-  "homepage": "/lightouts/",
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "start": "vite",
+    "prepare": "husky install",
+    "dev": "vite",
+    "build": "export GITHUB_PAGES=true && vite build",
+    "build:local": "vite build",
+    "serve": "vite preview",
+    "test": "vitest",
+    "testrun": "vitest run",
+    "lint-staged": "lint-staged",
+    "format": "prettier-eslint --write \"**/*.{js,json,md,yml,ts,tsx,jsx,css,scss}\""
   },
   "devDependencies": {
-    "@types/jest": "^26.0.4",
-    "ts-jest": "^26.1.2",
-    "typescript": "3.9.6"
+    "@types/node": "^20.4.4",
+    "@types/three": "^0.155.1",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-autofix": "^1.1.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-unused-imports": "^3.0.0",
+    "prettier-eslint-cli": "^7.1.0",
+    "solid-devtools": "^0.27.3",
+    "typescript": "^5.1.3",
+    "vite": "^4.3.9",
+    "vite-plugin-solid": "^2.7.0",
+    "vitest": "^0.34.2"
+  },
+  "dependencies": {
+    "@solidjs/router": "^0.8.2",
+    "@typescript-eslint/eslint-plugin": "^5.61.0",
+    "@typescript-eslint/parser": "^5.61.0",
+    "eslint": "^8.44.0",
+    "eslint-plugin-solid": "^0.12.1",
+    "husky": "^8.0.3",
+    "i18next": "^23.2.8",
+    "lint-staged": "^13.2.3",
+    "prettier-eslint": "^15.0.1",
+    "solid-app-router": "^0.4.2",
+    "solid-js": "^1.7.7",
+    "solid-styled-components": "^0.28.5",
+    "three": "^0.155.0"
+  },
+  "lint-staged": {
+    "*.{js,json,md,yml,ts,tsx,jsx,css,scss}": "pnpm format"
+  },
+  "moduleNameMapper": {
+    "^@/(.*)$": "<rootDir>/../src/$1"
   }
 }

@@ -1,0 +1,29 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "extends": [
+    "google",
+    "plugin:solid/recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "plugins": [
+    "@typescript-eslint/eslint-plugin",
+    "import",
+    "unused-imports",
+    "autofix"
+  ],
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "rules": {
+    "react/prop-types": "off",
+    "@typescript-eslint/no-empty-interface": 0,
+    "no-shadow": "error"
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  }
+}
