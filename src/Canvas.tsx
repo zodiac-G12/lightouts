@@ -1,51 +1,26 @@
 import * as THREE from 'three';
-import type {Accessor} from 'solid';
+import type {Accessor} from 'solid-js';
 
 // 🚨 !!!!CAUTIONS!!!!
 // in :973 comment outed
 // vim /node_modules/three/examples/jsm/controls/OrbitControls.js
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
-import {fStatusLights} from '@/modules/lightsout';
-import {
-  fMapLights,
-  fIdt_mtrx,
-  F2_Gauss_Jordan,
-  toShowAnsMap,
-} from '@/modules/lightsout';
 
-// FIXME (^^)
-type CubeColor = 'darkorange' | 'darkslateblue';
+import {LightsOut} from './modules/LightsOut';
+import {
+  createCubes,
+  cubeSpin,
+  CubeColor,
+  effectCubes,
+} from './modules/cube.module';
 
 const Canvas = (N = 3, isShowAnswer: Accessor<boolean>) => {
-  // 拡大隣接行列->単位行列にする予定
-  const toIdt = fMapLights(N);
+  const lightsout = new LightsOut({n: N});
 
-  // 単位行列->拡大隣接行列の逆行列にする予定
-  const mapLightsInv = fIdt_mtrx(N);
+  let answer = lightsout.answer;
+  const matrix = lightsout.matrix;
 
-  // 拡大隣接行列の逆行列　存在しない時はnull
-  const toAnsMtrx = F2_Gauss_Jordan(N, toIdt, mapLightsInv);
-
-  if (!toAnsMtrx) return;
-
-  const firstLightStatuses = fStatusLights(N);
-
-  let ansMap = toShowAnsMap(firstLightStatuses.flat(), toAnsMtrx, N);
-
-  console.log(
-      firstLightStatuses
-          .map((xs) => {
-            return xs.join(', ');
-          })
-          .join('\n')
-  );
-  console.log(
-      ansMap
-          .map((xs) => {
-            return xs.join(', ');
-          })
-          .join('\n')
-  );
+  if (!answer) return;
 
   const scene = new THREE.Scene();
 
@@ -63,41 +38,7 @@ const Canvas = (N = 3, isShowAnswer: Accessor<boolean>) => {
 
   const boxEachSideLength = 30.0 / N;
 
-  const cubes = [...Array(N * N)].map((_, i) => {
-    const x = i % N;
-    const y = Math.floor(i / N);
-
-    const cubeAbsolutePositionX =
-      (x - Math.floor(N / 2)) * (boxEachSideLength * 1.25);
-    const cubeAbsolutePositionY =
-      (y - Math.floor(N / 2)) * (boxEachSideLength * 1.25);
-    const cubeAbsolutePositionZ = 0;
-
-    const isLight = firstLightStatuses[x][y];
-    const boxColor: CubeColor = isLight ? 'darkorange' : 'darkslateblue';
-
-    const geometry = new THREE.BoxGeometry(
-        boxEachSideLength,
-        boxEachSideLength,
-        boxEachSideLength
-    );
-    const material = new THREE.MeshStandardMaterial({
-      color: boxColor,
-      roughness: 0.5,
-    });
-
-    const cube = new THREE.Mesh(geometry, material);
-    cube.position.set(
-        cubeAbsolutePositionX,
-        cubeAbsolutePositionY,
-        cubeAbsolutePositionZ
-    );
-    cube.userData = {x, y, isLight};
-
-    scene.add(cube);
-
-    return cube;
-  });
+  const cubes = createCubes({N, scene, matrix, boxEachSideLength});
 
   const renderer = new THREE.WebGLRenderer();
   renderer.setSize(window.innerWidth, window.innerHeight);
@@ -111,16 +52,8 @@ const Canvas = (N = 3, isShowAnswer: Accessor<boolean>) => {
 
     controls.update();
 
-    cubes.forEach((cube) => {
-      const {x, y} = cube.userData;
-      const isAnswerBox = ansMap[x][y];
-
-      if (isShowAnswer() && isAnswerBox) {
-        cube.rotation.y += 0.1;
-      } else {
-        cube.rotation.y = 0;
-      }
-    });
+    if (!answer) return;
+    cubeSpin({isShowAnswer, answer, cubes});
 
     // FIXME
     document.onmousedown = (event) => {
@@ -146,65 +79,32 @@ const Canvas = (N = 3, isShowAnswer: Accessor<boolean>) => {
           const {isLight: isLightBefore, x, y} = selectedCube.userData;
 
           const isLightNow = !isLightBefore;
-          const boxColorNow = isLightNow ? 'darkorange' : 'darkslateblue';
+          const boxColorNow: CubeColor = isLightNow ?
+            'darkorange' :
+            'darkslateblue';
 
           selectedCube.userData.isLight = isLightNow;
           selectedCube.material.color.setColorName(boxColorNow);
 
           console.log(selectedCube.userData);
 
-          // FIXME 🌝
-          [
-            {x: 1, y: 0},
-            {x: 0, y: 1},
-            {x: -1, y: 0},
-            {x: 0, y: -1},
-          ].forEach((direction) => {
-            const candidateX = direction.x + x;
-            const candidateY = direction.y + y;
-            if (
-              0 <= candidateX &&
-              candidateX < N &&
-              0 <= candidateY &&
-              candidateY < N
-            ) {
-              const candidateCube = cubes.find(
-                  (cube) =>
-                    cube.userData.x === candidateX &&
-                  cube.userData.y === candidateY
-              );
+          effectCubes({x, y, N, cubes});
 
-              if (!candidateCube) return;
-
-              const {isLight: isLightCandidate} = candidateCube.userData;
-
-              const isLightNowCandidate = !isLightCandidate;
-              const boxColorNowCandidate = isLightNowCandidate ?
-                'darkorange' :
-                'darkslateblue';
-
-              candidateCube.userData.isLight = isLightNowCandidate;
-              candidateCube.material.color.setColorName(boxColorNowCandidate);
-            }
-          });
-          const nowLightStatuses = cubes
+          const nowLightStatuses: number[] = cubes
               .sort(
                   (cubeA, cubeB) =>
                     cubeA.userData.x - cubeB.userData.x ||
                 cubeA.userData.y - cubeB.userData.y
               )
-              .map((cube) => {
+              .map((cube): number => {
                 return cube.userData.isLight ? 1 : 0;
               });
 
-          ansMap = toShowAnsMap(nowLightStatuses.flat(), toAnsMtrx, N);
-          console.log(
-              ansMap
-                  .map((xs) => {
-                    return xs.join(', ');
-                  })
-                  .join('\n')
-          );
+          console.log('nowLightStatuses', nowLightStatuses);
+
+          lightsout.update({states: nowLightStatuses});
+          answer = lightsout.answer;
+          lightsout.getAnswer();
         }
       }
     };
