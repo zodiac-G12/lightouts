@@ -1,18 +1,7 @@
 import * as THREE from 'three';
 import type {Accessor} from 'solid-js';
 
-// 🚨 !!!!CAUTIONS!!!!
-// in :973 comment outed
-// vim /node_modules/three/examples/jsm/controls/OrbitControls.js
-import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
-
-import {LightsOut} from './modules/LightsOut';
-import {
-  createCubes,
-  cubeSpin,
-  CubeColor,
-  effectCubes,
-} from './modules/cube.module';
+import {LightsOut, Cube, ThreeCanvas} from '@/modules';
 
 const Canvas = (N = 3, isShowAnswer: Accessor<boolean>) => {
   const lightsout = new LightsOut({n: N});
@@ -22,28 +11,15 @@ const Canvas = (N = 3, isShowAnswer: Accessor<boolean>) => {
 
   if (!answer) return;
 
-  const scene = new THREE.Scene();
+  const threeCanvas = new ThreeCanvas();
 
-  const camera = new THREE.PerspectiveCamera(
-      55,
-      window.innerWidth / window.innerHeight,
-      1,
-      20000
-  );
-  camera.position.set(0, 0, 100);
-
-  const light = new THREE.SpotLight(0xffffff, 10, 100, Math.PI / 4, 10, 0.5);
-  light.position.set(20, 20, 40);
-  scene.add(light);
+  const {scene, camera, renderer, controls} = threeCanvas;
 
   const boxEachSideLength = 30.0 / N;
 
-  const cubes = createCubes({N, scene, matrix, boxEachSideLength});
+  const cube = new Cube({N, scene, matrix, boxEachSideLength});
 
-  const renderer = new THREE.WebGLRenderer();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-
-  const controls = new OrbitControls(camera, renderer.domElement);
+  const cubes = cube.cubes;
 
   document.body.appendChild(renderer.domElement);
 
@@ -53,7 +29,7 @@ const Canvas = (N = 3, isShowAnswer: Accessor<boolean>) => {
     controls.update();
 
     if (!answer) return;
-    cubeSpin({isShowAnswer, answer, cubes});
+    cube.spin({isShowAnswer, answer});
 
     // FIXME
     document.onmousedown = (event) => {
@@ -70,43 +46,39 @@ const Canvas = (N = 3, isShowAnswer: Accessor<boolean>) => {
 
       const intersection = raycaster.intersectObjects(cubes);
 
-      if (intersection.length > 0) {
-        const {object} = intersection[0];
-
-        const selectedCube = cubes.find((cube) => cube.id === object.id);
-
-        if (selectedCube) {
-          const {isLight: isLightBefore, x, y} = selectedCube.userData;
-
-          const isLightNow = !isLightBefore;
-          const boxColorNow: CubeColor = isLightNow ?
-            'darkorange' :
-            'darkslateblue';
-
-          selectedCube.userData.isLight = isLightNow;
-          selectedCube.material.color.setColorName(boxColorNow);
-
-          console.log(selectedCube.userData);
-
-          effectCubes({x, y, N, cubes});
-
-          const nowLightStatuses: number[] = cubes
-              .sort(
-                  (cubeA, cubeB) =>
-                    cubeA.userData.x - cubeB.userData.x ||
-                cubeA.userData.y - cubeB.userData.y
-              )
-              .map((cube): number => {
-                return cube.userData.isLight ? 1 : 0;
-              });
-
-          console.log('nowLightStatuses', nowLightStatuses);
-
-          lightsout.update({states: nowLightStatuses});
-          answer = lightsout.answer;
-          lightsout.getAnswer();
-        }
+      if (intersection.length <= 0) {
+        return;
       }
+
+      const {object} = intersection[0];
+
+      const selectedCube = cubes.find((cube) => cube.id === object.id);
+
+      if (!selectedCube) {
+        return;
+      }
+
+      cube.colorChange({cube: selectedCube});
+
+      const {x, y} = selectedCube.userData;
+
+      cube.effect({x, y});
+
+      const nowLightStatuses: number[] = cubes
+          .sort(
+              (cubeA, cubeB) =>
+                cubeA.userData.x - cubeB.userData.x ||
+            cubeA.userData.y - cubeB.userData.y
+          )
+          .map((cube): number => {
+            return cube.userData.isLight ? 1 : 0;
+          });
+
+      console.log('nowLightStatuses', nowLightStatuses);
+
+      lightsout.update({states: nowLightStatuses});
+      answer = lightsout.answer;
+      lightsout.getAnswer();
     };
 
     renderer.render(scene, camera);
